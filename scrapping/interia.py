@@ -1,7 +1,6 @@
 from distutils.command.build import build
 from turtle import update
 from webbrowser import get
-from h11 import Data
 from numpy import size
 import requests
 from selenium import webdriver

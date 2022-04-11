@@ -3,7 +3,6 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from sympy import Or
 from .serializers import * 
 from .models import *
 from datetime import date, timedelta
