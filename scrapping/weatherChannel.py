@@ -29,11 +29,11 @@ def find_between( s, first, last ):
     except ValueError:
         return ""
 
-def main():
+def main(hrefs_dict):
     driver = get_driver()
-    hrefs = ['https://weather.com/weather/hourbyhour/l/e3172e6c71e631465847a819d8297d8cdb704d4662cb72af0699e437144d6980']#,'https://pogoda.interia.pl/prognoza-szczegolowa-krakow-stare-miasto,cId,13650']
+    hrefs = list(hrefs_dict.keys())
     selected_day = date.today()
-    region_counter = 1        
+    
     
     for link in hrefs:
         driver.get(link)
@@ -43,8 +43,7 @@ def main():
         direct_hours = timeline.find_all("details", class_ = "DaypartDetails--DayPartDetail--1up3g Disclosure--themeList--25Q0H")
         plus = 0
         for buffor in direct_hours:
-            hour_buffor = buffor.find("h2" , class_="DetailsSummary--daypartName--2FBp2")
-            
+            hour_buffor = buffor.find("h3" , class_="DetailsSummary--daypartName--2FBp2")    
             if (hour_buffor.text[len(hour_buffor.text)-3:] == " pm"):
                 hour = str(int(hour_buffor.text.replace(" pm",""))+12)
             else:
@@ -64,7 +63,7 @@ def main():
             db.db_delete(
                 str(selected_day + timedelta(days=plus)),
                 hour,
-                "płaszów",
+                hrefs_dict.get(link),
                 "weatherChannel")
 
             db.db_insert(
@@ -76,9 +75,9 @@ def main():
                 str(datetime.now())[:-7],
                 str(selected_day + timedelta(days=plus)),
                 hour,
-                "płaszów",
+                hrefs_dict.get(link),
                 "weatherChannel")
             if(hour_buffor.text == "11 pm"):
                 plus +=1
-        region_counter += 1
+
     print("WEATHER CHANNEL DONE")

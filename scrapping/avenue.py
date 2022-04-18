@@ -21,11 +21,10 @@ def get_driver():
 
     return webdriver.Chrome(executable_path="C:\\Users\\48508\\AppData\\Local\\Programs\\Python\\Python39\\chromedriver.exe", options=chrome_options)
 
-def main():
+def main(hrefs_dict):
     driver = get_driver()
-    hrefs = ['https://www.weatheravenue.com/pl/europe/pl/krakow/plaszow-hourly.html']#,'https://pogoda.interia.pl/prognoza-szczegolowa-krakow-stare-miasto,cId,13650']
-    selected_day = date.today()
-    region_counter = 1        
+    hrefs = list(hrefs_dict.keys())
+    selected_day = date.today()   
     
     for link in hrefs:
         driver.get(link)
@@ -50,7 +49,7 @@ def main():
                 db.db_delete(
                     str(selected_day + timedelta(days=day_bonus)),
                     hour, 
-                    "płaszów",
+                    hrefs_dict.get(link),
                     "avenue")
                 db.db_insert(
                     x[2][0:4].replace("°C_","").replace("°C",""),
@@ -61,7 +60,7 @@ def main():
                     str(datetime.now())[:-7] , 
                     str(selected_day + timedelta(days=day_bonus)), 
                     hour, 
-                    "płaszów",
+                    hrefs_dict.get(link),
                     "avenue")
         day_bonus = 0
         for even_buffor in hours_tables:
@@ -77,7 +76,7 @@ def main():
                 db.db_delete(
                     str(selected_day + timedelta(days=day_bonus)),
                     hour, 
-                    "płaszów",
+                    hrefs_dict.get(link),
                     "avenue")
                 db.db_insert(
                     x[2][0:4].replace("°C_","").replace("°C",""),
@@ -88,7 +87,6 @@ def main():
                     str(datetime.now())[:-7] , 
                     str(selected_day + timedelta(days=day_bonus)), 
                     hour, 
-                    "płaszów",
+                    hrefs_dict.get(link),
                     "avenue")
-        region_counter += 1
     print("AVENUE DONE")

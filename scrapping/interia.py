@@ -21,9 +21,9 @@ def get_driver():
 
     return webdriver.Chrome(executable_path="C:\\Users\\48508\\AppData\\Local\\Programs\\Python\\Python39\\chromedriver.exe", options=chrome_options)
 
-def main():
+def main(hrefs_dict):
     driver = get_driver()
-    hrefs = ['https://pogoda.interia.pl/prognoza-szczegolowa-krakow-plaszow,cId,26191']#,'https://pogoda.interia.pl/prognoza-szczegolowa-krakow-stare-miasto,cId,13650']
+    hrefs = list(hrefs_dict.keys())
     selected_day = date.today()
     left = "weather-forecast "
     right = " selected" 
@@ -32,7 +32,6 @@ def main():
         chosen_date = str(selected_day + timedelta(days=i))[0:5] + str(selected_day + timedelta(days=i))[5:6].replace("0","") + str(selected_day + timedelta(days=i))[6:8] + str(selected_day + timedelta(days=i))[8:9].replace("0","") + str(selected_day + timedelta(days=i))[9:10]
         date_heading = left + chosen_date + right
         days.append(date_heading)
-    region_counter = 1
     for link in hrefs:
         driver.get(link)
         weather_page = BeautifulSoup(driver.page_source, 'html.parser')
@@ -53,7 +52,7 @@ def main():
                 db.db_delete(
                     str(selected_day + timedelta(days=x)),
                     hour_buffor[i].text,
-                    "płaszów",
+                    hrefs_dict.get(link),
                     "interia")
                 try:
                     db.db_insert(
@@ -65,12 +64,10 @@ def main():
                     update_time, 
                     str(selected_day + timedelta(days=x)), 
                     hour_buffor[i].text, 
-                    "płaszów",
+                    hrefs_dict.get(link),
                     "interia")
                 except:
-                    print(str(selected_day + timedelta(days=i)) + " "+ hour_buffor[i].text)
+                    print(str(selected_day + timedelta(days=x)) + " "+ hour_buffor[i].text)
             x += 1
-            #i += 1
-        region_counter +=1
     print("INTERIA DONE")
 

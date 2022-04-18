@@ -42,6 +42,45 @@ CREATE TABLE IF NOT EXISTS `weather`.`avenue` (
   `region` VARCHAR(20) NULL)
 ENGINE = InnoDB;
 
+CREATE TABLE IF NOT EXISTS `weather`.`onet` (
+  `id` INT  PRIMARY KEY auto_increment,
+  `temperature` INT NULL,
+  `wind` INT NULL,
+  `humidity` INT NULL,
+  `rain` FLOAT NULL,
+  `cloudiness` INT NULL, 
+  `update_time` VARCHAR(50) NULL,
+  `weather_time` VARCHAR(20) NULL,
+  `hour` INT NULL,
+  `region` VARCHAR(20) NULL)
+ENGINE = InnoDB;
+
+CREATE TABLE IF NOT EXISTS `weather`.`wp` (
+  `id` INT  PRIMARY KEY auto_increment,
+  `temperature` INT NULL,
+  `wind` INT NULL,
+  `humidity` INT NULL,
+  `rain` FLOAT NULL,
+  `cloudiness` INT NULL, 
+  `update_time` VARCHAR(50) NULL,
+  `weather_time` VARCHAR(20) NULL,
+  `hour` INT NULL,
+  `region` VARCHAR(20) NULL)
+ENGINE = InnoDB;
+
+CREATE TABLE IF NOT EXISTS `weather`.`metroprog` (
+  `id` INT  PRIMARY KEY auto_increment,
+  `temperature` INT NULL,
+  `wind` INT NULL,
+  `humidity` INT NULL,
+  `rain` FLOAT NULL,
+  `cloudiness` INT NULL, 
+  `update_time` VARCHAR(50) NULL,
+  `weather_time` VARCHAR(20) NULL,
+  `hour` INT NULL,
+  `region` VARCHAR(20) NULL)
+ENGINE = InnoDB;
+
 
 DELIMITER //
 CREATE PROCEDURE  delete_interia (  weather_time_X VARCHAR(20), hour_X INT, region_X VARCHAR(20))BEGIN
@@ -51,6 +90,21 @@ CREATE PROCEDURE  delete_interia (  weather_time_X VARCHAR(20), hour_X INT, regi
 END; //
 DELIMITER ;
 
+DELIMITER //
+CREATE PROCEDURE  delete_metroprog (  weather_time_X VARCHAR(20), hour_X INT, region_X VARCHAR(20))BEGIN
+
+  DELETE FROM metroprog WHERE weather_time = weather_time_X AND hour = hour_X AND region = region_X;
+
+END; //
+DELIMITER ;
+
+DELIMITER //
+CREATE PROCEDURE  delete_wp (  weather_time_X VARCHAR(20), hour_X INT, region_X VARCHAR(20))BEGIN
+
+  DELETE FROM wp WHERE weather_time = weather_time_X AND hour = hour_X AND region = region_X;
+
+END; //
+DELIMITER ;
 
 DELIMITER //
 CREATE PROCEDURE  delete_weatherChannel (  weather_time_X VARCHAR(20), hour_X INT, region_X VARCHAR(20))BEGIN
@@ -69,3 +123,11 @@ CREATE PROCEDURE  delete_avenue (  weather_time_X VARCHAR(20), hour_X INT, regio
 END; //
 DELIMITER ;
 
+
+DELIMITER //
+CREATE PROCEDURE  delete_onet (  weather_time_X VARCHAR(20), hour_X INT, region_X VARCHAR(20))BEGIN
+
+  DELETE FROM onet WHERE weather_time = weather_time_X AND hour = hour_X AND region = region_X;
+
+END; //
+DELIMITER ;
