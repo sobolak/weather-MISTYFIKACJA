@@ -33,6 +33,7 @@ def main(hrefs_dict):
         tables = weather_tables.find_all("div", class_="list")
         for buffor in tables:
             hours = buffor.find_all("div", class_ = "item")
+            
             for i in range(len(hours)):
                 x = hours[i].text.split(" ")
                 for opad_finder in x:
@@ -46,20 +47,22 @@ def main(hrefs_dict):
                 wind = rest[6]
                 rain = rest[0]
                 humidity = rest[9].replace("%","")
-                if cloud_buffor[0] == "Prawie" or cloud_buffor[0] == "Prawie,": 
-                    cloudiness = str(randint(3,17))
-                elif cloud_buffor[0] == "Bezchmurnie" or cloud_buffor[0] == "Bezchmurnie,":
-                    cloudiness = str(0)
-                else:
-                    if cloud_buffor[1] == "małe," or cloud_buffor[1] == "małe" :
-                        cloudiness = str(randint(18,41))
-                    elif cloud_buffor[1] == "umiarkowane," or cloud_buffor[1] == "umiarkowane":
-                        cloudiness = str(randint(45,65))
-                    elif cloud_buffor[1] == "duże," or cloud_buffor[1] == "duże":
-                        cloudiness = str(randint(65,100))
+                try:
+                    if cloud_buffor[0] == "Prawie" or cloud_buffor[0] == "Prawie,": 
+                        cloudiness = str(randint(3,17))
+                    elif cloud_buffor[0] == "Bezchmurnie" or cloud_buffor[0] == "Bezchmurnie,":
+                        cloudiness = str(0)
                     else:
-                        cloudiness = str(randint(30,70))
-                
+                        if cloud_buffor[1] == "małe," or cloud_buffor[1] == "małe" :
+                            cloudiness = str(randint(18,41))
+                        elif cloud_buffor[1] == "umiarkowane," or cloud_buffor[1] == "umiarkowane":
+                            cloudiness = str(randint(45,65))
+                        elif cloud_buffor[1] == "duże," or cloud_buffor[1] == "duże":
+                            cloudiness = str(randint(65,100))
+                        else:
+                            cloudiness = str(randint(30,70))
+                except:
+                    cloudiness = str(randint(30,70))
                 db.db_delete(
                     str(selected_day + timedelta(days=plus)),
                     hour,
