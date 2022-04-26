@@ -81,6 +81,10 @@ CREATE TABLE IF NOT EXISTS `weather`.`metroprog` (
   `region` VARCHAR(20) NULL)
 ENGINE = InnoDB;
 
+CREATE TABLE IF NOT EXISTS `weather`.`mails` (
+  `mail` VARCHAR(50) NULL UNIQUE )
+ENGINE = InnoDB;
+
 
 DELIMITER //
 CREATE PROCEDURE  delete_interia (  weather_time_X VARCHAR(20), hour_X INT, region_X VARCHAR(20))BEGIN
