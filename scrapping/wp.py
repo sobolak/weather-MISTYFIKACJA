@@ -15,7 +15,7 @@ def get_driver():
     chrome_options.add_argument("--headless")
     chrome_options.add_argument('--log-level=1')
 
-    return webdriver.Chrome(executable_path="/usr/lib/chromium-browser/chromedriver", options=chrome_options)
+    return webdriver.Chrome(executable_path="/usr/lib/chromium-browser/chromedriver" ,options=chrome_options)
 
 def main(hrefs_dict):
     driver = get_driver()
