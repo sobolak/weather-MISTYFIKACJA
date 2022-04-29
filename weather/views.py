@@ -43,7 +43,7 @@ def interiaAll(request,r):
 
 @api_view(['GET'])
 def avenueAll(request,r):
-    records = interia.objects.filter(region = r)
+    records = avenue.objects.filter(region = r)
     selectedDay = date.today()
     
     records1 = records.filter(weather_time = selectedDay)
@@ -58,7 +58,7 @@ def avenueAll(request,r):
 
 @api_view(['GET'])
 def weatherChannelAll(request,r):
-    records = interia.objects.filter(region = r)
+    records = weatherChannel.objects.filter(region = r)
     selectedDay = date.today()
 
     records1 = records.filter(weather_time = selectedDay)
@@ -69,4 +69,49 @@ def weatherChannelAll(request,r):
 
     result = list(chain(records1, records2, records3))
     serializer = weatherChannelSerializer(result, many = True  )
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def onetAll(request,r):
+    records = onet.objects.filter(region = r)
+    selectedDay = date.today()
+
+    records1 = records.filter(weather_time = selectedDay)
+    selectedDay = selectedDay + timedelta(days=1)
+    records2 = records.filter(weather_time = selectedDay)
+    selectedDay = selectedDay + timedelta(days=1)
+    records3 = records.filter(weather_time = selectedDay)
+
+    result = list(chain(records1, records2, records3))
+    serializer = onetSerializer(result, many = True  )
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def wpAll(request,r):
+    records = wp.objects.filter(region = r)
+    selectedDay = date.today()
+
+    records1 = records.filter(weather_time = selectedDay)
+    selectedDay = selectedDay + timedelta(days=1)
+    records2 = records.filter(weather_time = selectedDay)
+    selectedDay = selectedDay + timedelta(days=1)
+    records3 = records.filter(weather_time = selectedDay)
+
+    result = list(chain(records1, records2, records3))
+    serializer = wpSerializer(result, many = True  )
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def metroprogAll(request,r):
+    records = metroprog.objects.filter(region = r)
+    selectedDay = date.today()
+
+    records1 = records.filter(weather_time = selectedDay)
+    selectedDay = selectedDay + timedelta(days=1)
+    records2 = records.filter(weather_time = selectedDay)
+    selectedDay = selectedDay + timedelta(days=1)
+    records3 = records.filter(weather_time = selectedDay)
+
+    result = list(chain(records1, records2, records3))
+    serializer = metroprogSerializer(result, many = True  )
     return Response(serializer.data)

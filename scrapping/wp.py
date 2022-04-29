@@ -10,13 +10,19 @@ from random import random, uniform, randint
 from datetime import date, datetime, timedelta
 import db_connection as db
 from random import randint
+import platform
 
 def get_driver():
     chrome_options = Options()
     chrome_options.add_argument("--headless")
     chrome_options.add_argument('--log-level=1')
-
-    return webdriver.Chrome(executable_path="/usr/lib/chromium-browser/chromedriver" ,options=chrome_options)
+    
+    if (platform.system() == "Windows"):
+        path = "C:\\Users\\48508\\AppData\\Local\\Programs\\Python\\Python39\\chromedriver.exe"
+    else:
+        path = "/usr/lib/chromium-browser/chromedriver"
+    
+    return webdriver.Chrome(executable_path=path ,options=chrome_options)
 
 def main(hrefs_dict):
     driver = get_driver()

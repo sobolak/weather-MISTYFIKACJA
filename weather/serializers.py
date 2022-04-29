@@ -16,3 +16,18 @@ class weatherChannelSerializer(serializers.ModelSerializer):
     class Meta:
         model = weatherChannel
         fields ="__all__"
+
+class onetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = onet
+        fields ="__all__"
+
+class wpSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = wp
+        fields ="__all__"
+
+class metroprogSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = metroprog
+        fields ="__all__"
