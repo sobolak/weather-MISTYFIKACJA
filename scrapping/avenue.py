@@ -2,6 +2,7 @@ from cProfile import label
 from distutils.command.build import build
 from webbrowser import get
 from selenium import webdriver
+from time import sleep
 from selenium.webdriver.common.by import By
 from bs4 import BeautifulSoup
 from selenium.webdriver.chrome.options import Options
@@ -19,6 +20,7 @@ def get_driver():
 
 def main(hrefs_dict):
     driver = get_driver()
+    sleep(15)
     hrefs = list(hrefs_dict.keys())
     selected_day = date.today()   
     

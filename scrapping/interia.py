@@ -4,6 +4,7 @@ from webbrowser import get
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from bs4 import BeautifulSoup
+from time import sleep
 from selenium.webdriver.chrome.options import Options
 from datetime import date, datetime, timedelta
 import db_connection as db
@@ -18,6 +19,7 @@ def get_driver():
 
 def main(hrefs_dict):
     driver = get_driver()
+    sleep(15)
     hrefs = list(hrefs_dict.keys())
     selected_day = date.today()
     left = "weather-forecast "
