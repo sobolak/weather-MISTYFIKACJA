@@ -44,7 +44,6 @@ def main(hrefs_dict):
         timeline = weather_page.find("div", class_ = "HourlyForecast--DisclosureList--3CdxR")
         direct_hours = timeline.find_all("details", class_ = "DaypartDetails--DayPartDetail--1up3g DaypartDetails--ctaShown--2cYCl Disclosure--themeList--25Q0H")
         plus = 0
-        print(len(direct_hours))
         for buffor in direct_hours:
             hour_buffor = buffor.find("h3" , class_="DetailsSummary--daypartName--2FBp2")    
             if (hour_buffor.text[len(hour_buffor.text)-3:] == " pm"):

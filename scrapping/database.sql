@@ -3,7 +3,7 @@ create database weather;
 
 use weather;
 
-CREATE TABLE IF NOT EXISTS `weather`.`interia` (
+CREATE TABLE IF NOT EXISTS `sql11489227`.`interia` (
   `id` INT  PRIMARY KEY auto_increment,
   `temperature` INT NULL,
   `wind` INT NULL,
@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS `weather`.`interia` (
   `region` VARCHAR(20) NULL)
 ENGINE = InnoDB;
 
-CREATE TABLE IF NOT EXISTS `weather`.`weatherChannel` (
+CREATE TABLE IF NOT EXISTS `sql11489227`.`weatherChannel` (
   `id` INT  PRIMARY KEY auto_increment,
   `temperature` INT NULL,
   `wind` INT NULL,
@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS `weather`.`weatherChannel` (
   `region` VARCHAR(20) NULL)
 ENGINE = InnoDB;
 
-CREATE TABLE IF NOT EXISTS `weather`.`avenue` (
+CREATE TABLE IF NOT EXISTS `sql11489227`.`avenue` (
   `id` INT  PRIMARY KEY auto_increment,
   `temperature` INT NULL,
   `wind` INT NULL,
@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS `weather`.`avenue` (
   `region` VARCHAR(20) NULL)
 ENGINE = InnoDB;
 
-CREATE TABLE IF NOT EXISTS `weather`.`onet` (
+CREATE TABLE IF NOT EXISTS `sql11489227`.`onet` (
   `id` INT  PRIMARY KEY auto_increment,
   `temperature` INT NULL,
   `wind` INT NULL,
@@ -55,7 +55,7 @@ CREATE TABLE IF NOT EXISTS `weather`.`onet` (
   `region` VARCHAR(20) NULL)
 ENGINE = InnoDB;
 
-CREATE TABLE IF NOT EXISTS `weather`.`wp` (
+CREATE TABLE IF NOT EXISTS `sql11489227`.`wp` (
   `id` INT  PRIMARY KEY auto_increment,
   `temperature` INT NULL,
   `wind` INT NULL,
@@ -68,7 +68,7 @@ CREATE TABLE IF NOT EXISTS `weather`.`wp` (
   `region` VARCHAR(20) NULL)
 ENGINE = InnoDB;
 
-CREATE TABLE IF NOT EXISTS `weather`.`metroprog` (
+CREATE TABLE IF NOT EXISTS `sql11489227`.`metroprog` (
   `id` INT  PRIMARY KEY auto_increment,
   `temperature` INT NULL,
   `wind` INT NULL,
@@ -81,7 +81,7 @@ CREATE TABLE IF NOT EXISTS `weather`.`metroprog` (
   `region` VARCHAR(20) NULL)
 ENGINE = InnoDB;
 
-CREATE TABLE IF NOT EXISTS `weather`.`mails` (
+CREATE TABLE IF NOT EXISTS `sql11489227`.`mails` (
   `mail` VARCHAR(50) NULL UNIQUE )
 ENGINE = InnoDB;
 

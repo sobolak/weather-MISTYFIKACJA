@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
 from pathlib import Path
+from django.db.backends.mysql.base import DatabaseWrapper
+DatabaseWrapper.data_types['DateTimeField'] = 'datetime' # fix for MySQL 5.5
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -78,11 +80,14 @@ WSGI_APPLICATION = 'MISTYFIKACJA.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'weather',
-        'HOST': '127.0.0.1',
+        'NAME': 'sql11489227',
+        'HOST': 'sql11.freemysqlhosting.net',
         'PORT': '3306',
-        'USER': 'root',
-        'PASSWORD': 'cybant17',
+        'USER': 'sql11489227',
+        'PASSWORD': 'SaBnKNWRHt',
+        'OPTIONS': {
+          'autocommit': True,
+        },
     }
 }
 
