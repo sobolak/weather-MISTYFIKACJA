@@ -11,4 +11,5 @@ urlpatterns = [
     path('onet/<str:r>', views.onetAll, name="onet"),
     path('wp/<str:r>', views.wpAll, name="wp"),
     path('metroprog/<str:r>', views.metroprogAll, name="metroprog"),
+    path('mailsAdd', views.mailsAdd, name="mailsAdd"),
 ]

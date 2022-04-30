@@ -93,3 +93,9 @@ class metroprog(models.Model):
     class Meta:
         managed = False
         db_table = 'metroprog'
+
+class mails(models.Model):
+    update_time = models.CharField(max_length=50, unique=True)
+    class Meta:
+        managed = False
+        db_table = 'mails'

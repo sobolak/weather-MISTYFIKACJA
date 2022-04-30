@@ -31,3 +31,8 @@ class metroprogSerializer(serializers.ModelSerializer):
     class Meta:
         model = metroprog
         fields ="__all__"
+
+class mailsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = mails
+        fields ="__all__"

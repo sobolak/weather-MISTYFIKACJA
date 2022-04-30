@@ -115,3 +115,10 @@ def metroprogAll(request,r):
     result = list(chain(records1, records2, records3))
     serializer = metroprogSerializer(result, many = True  )
     return Response(serializer.data)
+
+@api_view(['POST'])
+def mailsAdd(request):
+    serializer = mailsSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+    return Response(serializer.data)
