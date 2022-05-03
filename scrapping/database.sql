@@ -81,6 +81,13 @@ CREATE TABLE IF NOT EXISTS `sql10489794`.`mails` (
   `mail` VARCHAR(50) NULL UNIQUE )
 ENGINE = InnoDB;
 
+CREATE TABLE IF NOT EXISTS `sql10489794`.`esp` (
+  `id` INT  PRIMARY KEY auto_increment,
+  `temperature` INT NULL,
+  `humidity` INT NULL,
+  `hour` INT NULL,
+  `weather_time` VARCHAR(20) NULL)
+ENGINE = InnoDB;
 
 DELIMITER //
 CREATE PROCEDURE  delete_interia (  weather_time_X VARCHAR(20), hour_X INT, region_X VARCHAR(20))BEGIN
