@@ -2,10 +2,10 @@ import mysql.connector
 
 def db_insert(temperature,wind,humidity,rain,cloudiness,update_time,weather_time,hour,region,name):
     try:
-        connection = mysql.connector.connect(host='sql11.freemysqlhosting.net',
-                                         database='sql11489227',
-                                         user='sql11489227',
-                                         password='SaBnKNWRHt',
+        connection = mysql.connector.connect(host='sql10.freemysqlhosting.net',
+                                         database='sql10489794',
+                                         user='sql10489794',
+                                         password='IPELfw5A2X',
                                          auth_plugin='mysql_native_password')
         cursor = connection.cursor()
         query = "INSERT INTO "+ name + "(temperature,wind,humidity,rain,cloudiness,update_time,weather_time,hour,region) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s)"
@@ -22,10 +22,10 @@ def db_insert(temperature,wind,humidity,rain,cloudiness,update_time,weather_time
 
 def db_delete(weather_time, hour, region, name):
     try:
-        connection = mysql.connector.connect(host='sql11.freemysqlhosting.net',
-                                         database='sql11489227',
-                                         user='sql11489227',
-                                         password='SaBnKNWRHt',
+        connection = mysql.connector.connect(host='sql10.freemysqlhosting.net',
+                                         database='sql10489794',
+                                         user='sql10489794',
+                                         password='IPELfw5A2X',
                                          auth_plugin='mysql_native_password')
         cursor = connection.cursor()
         query = "CALL delete_"+ name + " (%s,%s,%s);"
