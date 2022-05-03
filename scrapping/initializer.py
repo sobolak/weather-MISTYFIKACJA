@@ -5,8 +5,8 @@ import weatherChannel
 import onet
 import wp
 import metroprog
-import schedule
-import time
+# import schedule
+# import time
 import mysql.connector
 
 try:
@@ -17,16 +17,16 @@ try:
     wp_hrefs = {'https://pogoda.wp.pl/pogoda-na-dzis/krakow/3094802':'agh'}
     metroprog_hrefs = {'https://www.meteoprog.pl/pl/meteograms/Krakow/':'agh'}
 
-    # connection = mysql.connector.connect(host='sql11.freemysqlhosting.net',
-    #                                     database='sql11489741',
-    #                                     user='sql11489741',
-    #                                     password='YWlpqUE1zv',
-    #                                     auth_plugin='mysql_native_password')
-    connection = mysql.connector.connect(host='localhost',
-        database='weather',
-        user='root',
-        password='cybant17',
-        auth_plugin='mysql_native_password')
+    connection = mysql.connector.connect(host='sql11.freemysqlhosting.net',
+                                        database='sql11489741',
+                                        user='sql11489741',
+                                        password='YWlpqUE1zv',
+                                        auth_plugin='mysql_native_password')
+    # connection = mysql.connector.connect(host='localhost',
+    #     database='weather',
+    #     user='root',
+    #     password='cybant17',
+    #     auth_plugin='mysql_native_password')
 
     interia.main(interia_hrefs,connection)
     avenue.main(avenue_hrefs,connection)

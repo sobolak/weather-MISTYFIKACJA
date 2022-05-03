@@ -79,6 +79,14 @@ CREATE TABLE IF NOT EXISTS `sql11489784`.`metroprog` (
   `region` VARCHAR(20) NULL)
 ENGINE = InnoDB;
 
+CREATE TABLE IF NOT EXISTS `sql11489784`.`esp` (
+  `id` INT  PRIMARY KEY auto_increment,
+  `temperature` INT NULL,
+  `humidity` INT NULL,
+  `hour` INT NULL,
+  `weather_time` VARCHAR(20) NULL)
+ENGINE = InnoDB;
+
 CREATE TABLE IF NOT EXISTS `sql11489784`.`mails` (
   `mail` VARCHAR(50) NULL UNIQUE )
 ENGINE = InnoDB;
