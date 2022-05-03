@@ -1,6 +1,6 @@
 import mysql.connector
 
-def db_insert(temperature,wind,humidity,rain,cloudiness,update_time,weather_time,hour,region,name,connection):
+def db_insert(temperature,wind,humidity,rain,cloudiness,update_time,weather_time,hour,region,name):
     try:
         connection = mysql.connector.connect(host='sql10.freemysqlhosting.net',
                                          database='sql10489794',
@@ -18,9 +18,9 @@ def db_insert(temperature,wind,humidity,rain,cloudiness,update_time,weather_time
     finally:
         if connection.is_connected():
             cursor.close()
-    #         connection.close()
+            connection.close()
 
-def db_delete(weather_time, hour, region, name,connection):
+def db_delete(weather_time, hour, region, name):
     try:
         connection = mysql.connector.connect(host='sql10.freemysqlhosting.net',
                                          database='sql10489794',
@@ -38,5 +38,5 @@ def db_delete(weather_time, hour, region, name,connection):
     finally:
         if connection.is_connected():
             cursor.close()
-            # connection.close()   
+            connection.close()   
 

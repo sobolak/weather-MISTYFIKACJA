@@ -24,7 +24,7 @@ def get_driver():
     
     return webdriver.Chrome(executable_path=path ,options=chrome_options)
 
-def main(hrefs_dict,connection):
+def main(hrefs_dict):
     driver = get_driver()
     sleep(15)
     hrefs = list(hrefs_dict.keys())
@@ -66,7 +66,7 @@ def main(hrefs_dict,connection):
                 str(selected_day + timedelta(days=plus)),
                 hour,
                 hrefs_dict.get(link),
-                "onet",connection)
+                "onet")
 
             db.db_insert(
                 temperature,
@@ -78,7 +78,7 @@ def main(hrefs_dict,connection):
                 str(selected_day + timedelta(days=plus)),
                 hour,
                 hrefs_dict.get(link),
-                "onet",connection)
+                "onet")
 
             if(hour == "23"):
                 plus +=1

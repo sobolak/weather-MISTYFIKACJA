@@ -30,7 +30,7 @@ def find_between( s, first, last ):
     except ValueError:
         return ""
 
-def main(hrefs_dict,connection):
+def main(hrefs_dict):
     driver = get_driver()
     sleep(15)
     hrefs = list(hrefs_dict.keys())
@@ -66,7 +66,7 @@ def main(hrefs_dict,connection):
                 str(selected_day + timedelta(days=plus)),
                 hour,
                 hrefs_dict.get(link),
-                "weatherChannel",connection)
+                "weatherChannel")
 
             db.db_insert(
                 str(round((int(temp_buffor.text.replace("°",""))-32)*(5/9))),
@@ -78,7 +78,7 @@ def main(hrefs_dict,connection):
                 str(selected_day + timedelta(days=plus)),
                 hour,
                 hrefs_dict.get(link),
-                "weatherChannel",connection)
+                "weatherChannel")
             if(hour_buffor.text == "11 pm"):
                 plus +=1
 

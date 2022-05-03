@@ -22,7 +22,7 @@ def get_driver():
     
     return webdriver.Chrome(executable_path=path ,options=chrome_options)
 
-def main(hrefs_dict,connection):
+def main(hrefs_dict):
     driver = get_driver()
     sleep(15)
     hrefs = list(hrefs_dict.keys())
@@ -55,7 +55,7 @@ def main(hrefs_dict,connection):
                     str(selected_day + timedelta(days=x)),
                     hour_buffor[i].text,
                     hrefs_dict.get(link),
-                    "interia",connection)
+                    "interia")
                 try:
                     db.db_insert(
                     temp_buffor[i].text.replace("°C",""),
@@ -67,7 +67,7 @@ def main(hrefs_dict,connection):
                     str(selected_day + timedelta(days=x)), 
                     hour_buffor[i].text, 
                     hrefs_dict.get(link),
-                    "interia",connection)
+                    "interia")
                 except:
                     print(str(selected_day + timedelta(days=x)) + " "+ hour_buffor[i].text)
             x += 1
