@@ -122,3 +122,17 @@ def mailsAdd(request):
     if serializer.is_valid():
         serializer.save()
     return Response(serializer.data)
+
+@api_view(['GET'])
+def espAll(request):
+    selectedDay = date.today()
+    records = esp.objects.all
+    #print(records[0].temperature)
+
+    serializer = espSerializer(records) #zmiana na TRUE
+    #return Response(serializer.data)
+    # serializer = mailsSerializer(data=request.data)
+    # if serializer.is_valid():
+    #     serializer.save()
+    return Response(serializer.data)
+

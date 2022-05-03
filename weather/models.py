@@ -95,7 +95,17 @@ class metroprog(models.Model):
         db_table = 'metroprog'
 
 class mails(models.Model):
-    update_time = models.CharField(max_length=50, unique=True)
+    mail = models.CharField(max_length=50, unique=True)
     class Meta:
         managed = False
         db_table = 'mails'
+    
+class esp(models.Model):
+    id = models.AutoField(primary_key = True)
+    temperature = models.IntegerField()
+    humidity = models.IntegerField()
+    hour = models.IntegerField()
+    weather_time = models.CharField(max_length=20)
+    class Meta:
+        managed = False
+        db_table = 'esp'
