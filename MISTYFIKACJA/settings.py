@@ -80,11 +80,11 @@ WSGI_APPLICATION = 'MISTYFIKACJA.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'sql11489227',
+        'NAME': 'sql11489741',
         'HOST': 'sql11.freemysqlhosting.net',
         'PORT': '3306',
-        'USER': 'sql11489227',
-        'PASSWORD': 'SaBnKNWRHt',
+        'USER': 'sql11489741',
+        'PASSWORD': 'YWlpqUE1zv',
         'OPTIONS': {
           'autocommit': True,
         },

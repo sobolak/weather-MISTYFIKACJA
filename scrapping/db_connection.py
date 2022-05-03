@@ -1,12 +1,12 @@
 import mysql.connector
 
-def db_insert(temperature,wind,humidity,rain,cloudiness,update_time,weather_time,hour,region,name):
+def db_insert(temperature,wind,humidity,rain,cloudiness,update_time,weather_time,hour,region,name,connection):
     try:
-        connection = mysql.connector.connect(host='sql11.freemysqlhosting.net',
-                                         database='sql11489227',
-                                         user='sql11489227',
-                                         password='SaBnKNWRHt',
-                                         auth_plugin='mysql_native_password')
+        # connection = mysql.connector.connect(host='sql11.freemysqlhosting.net',
+        #                                  database='sql11489227',
+        #                                  user='sql11489227',
+        #                                  password='SaBnKNWRHt',
+        #                                  auth_plugin='mysql_native_password')
         cursor = connection.cursor()
         query = "INSERT INTO "+ name + "(temperature,wind,humidity,rain,cloudiness,update_time,weather_time,hour,region) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s)"
         record  = (temperature,wind,humidity,rain,cloudiness,update_time,weather_time,hour,region)
@@ -18,15 +18,15 @@ def db_insert(temperature,wind,humidity,rain,cloudiness,update_time,weather_time
     finally:
         if connection.is_connected():
             cursor.close()
-            connection.close()
+    #         connection.close()
 
-def db_delete(weather_time, hour, region, name):
+def db_delete(weather_time, hour, region, name,connection):
     try:
-        connection = mysql.connector.connect(host='sql11.freemysqlhosting.net',
-                                         database='sql11489227',
-                                         user='sql11489227',
-                                         password='SaBnKNWRHt',
-                                         auth_plugin='mysql_native_password')
+        # connection = mysql.connector.connect(host='sql11.freemysqlhosting.net',
+        #                                  database='sql11489227',
+        #                                  user='sql11489227',
+        #                                  password='SaBnKNWRHt',
+        #                                  auth_plugin='mysql_native_password')
         cursor = connection.cursor()
         query = "CALL delete_"+ name + " (%s,%s,%s);"
         record  = (weather_time, hour, region)
@@ -38,5 +38,5 @@ def db_delete(weather_time, hour, region, name):
     finally:
         if connection.is_connected():
             cursor.close()
-            connection.close()   
+            # connection.close()   
 

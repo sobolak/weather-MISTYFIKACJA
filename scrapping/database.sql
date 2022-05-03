@@ -1,9 +1,7 @@
-drop database weather;
-create database weather;
 
-use weather;
+use sql11489784;
 
-CREATE TABLE IF NOT EXISTS `sql11489227`.`interia` (
+CREATE TABLE IF NOT EXISTS `sql11489784`.`interia` (
   `id` INT  PRIMARY KEY auto_increment,
   `temperature` INT NULL,
   `wind` INT NULL,
@@ -16,7 +14,7 @@ CREATE TABLE IF NOT EXISTS `sql11489227`.`interia` (
   `region` VARCHAR(20) NULL)
 ENGINE = InnoDB;
 
-CREATE TABLE IF NOT EXISTS `sql11489227`.`weatherChannel` (
+CREATE TABLE IF NOT EXISTS `sql11489784`.`weatherChannel` (
   `id` INT  PRIMARY KEY auto_increment,
   `temperature` INT NULL,
   `wind` INT NULL,
@@ -29,7 +27,7 @@ CREATE TABLE IF NOT EXISTS `sql11489227`.`weatherChannel` (
   `region` VARCHAR(20) NULL)
 ENGINE = InnoDB;
 
-CREATE TABLE IF NOT EXISTS `sql11489227`.`avenue` (
+CREATE TABLE IF NOT EXISTS `sql11489784`.`avenue` (
   `id` INT  PRIMARY KEY auto_increment,
   `temperature` INT NULL,
   `wind` INT NULL,
@@ -42,7 +40,7 @@ CREATE TABLE IF NOT EXISTS `sql11489227`.`avenue` (
   `region` VARCHAR(20) NULL)
 ENGINE = InnoDB;
 
-CREATE TABLE IF NOT EXISTS `sql11489227`.`onet` (
+CREATE TABLE IF NOT EXISTS `sql11489784`.`onet` (
   `id` INT  PRIMARY KEY auto_increment,
   `temperature` INT NULL,
   `wind` INT NULL,
@@ -55,7 +53,7 @@ CREATE TABLE IF NOT EXISTS `sql11489227`.`onet` (
   `region` VARCHAR(20) NULL)
 ENGINE = InnoDB;
 
-CREATE TABLE IF NOT EXISTS `sql11489227`.`wp` (
+CREATE TABLE IF NOT EXISTS `sql11489784`.`wp` (
   `id` INT  PRIMARY KEY auto_increment,
   `temperature` INT NULL,
   `wind` INT NULL,
@@ -68,7 +66,7 @@ CREATE TABLE IF NOT EXISTS `sql11489227`.`wp` (
   `region` VARCHAR(20) NULL)
 ENGINE = InnoDB;
 
-CREATE TABLE IF NOT EXISTS `sql11489227`.`metroprog` (
+CREATE TABLE IF NOT EXISTS `sql11489784`.`metroprog` (
   `id` INT  PRIMARY KEY auto_increment,
   `temperature` INT NULL,
   `wind` INT NULL,
@@ -81,7 +79,7 @@ CREATE TABLE IF NOT EXISTS `sql11489227`.`metroprog` (
   `region` VARCHAR(20) NULL)
 ENGINE = InnoDB;
 
-CREATE TABLE IF NOT EXISTS `sql11489227`.`mails` (
+CREATE TABLE IF NOT EXISTS `sql11489784`.`mails` (
   `mail` VARCHAR(50) NULL UNIQUE )
 ENGINE = InnoDB;
 
