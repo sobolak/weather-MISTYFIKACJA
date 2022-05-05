@@ -12,5 +12,6 @@ urlpatterns = [
     path('wp/<str:r>', views.wpAll, name="wp"),
     path('metroprog/<str:r>', views.metroprogAll, name="metroprog"),
     path('mailsAdd', views.mailsAdd, name="mailsAdd"),
-    path('esp', views.espAll, name="espAll"),
+    path('raspberry', views.raspAll, name="raspberry"),
+    path('model', views.modelMLAll, name="Model ML"),
 ]

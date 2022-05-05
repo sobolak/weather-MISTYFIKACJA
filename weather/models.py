@@ -100,7 +100,7 @@ class mails(models.Model):
         managed = False
         db_table = 'mails'
     
-class esp(models.Model):
+class raspberry(models.Model):
     id = models.AutoField(primary_key = True)
     temperature = models.IntegerField()
     humidity = models.IntegerField()
@@ -109,3 +109,14 @@ class esp(models.Model):
     class Meta:
         managed = False
         db_table = 'esp'
+
+class modelML(models.Model):
+    id = models.AutoField(primary_key = True)
+    date = models.CharField(max_length=10)
+    hour = models.IntegerField()
+    temp = models.IntegerField()
+    humidity = models.IntegerField()
+    conditions = models.CharField(max_length=64)
+    class Meta:
+        managed = False
+        db_table = 'forecast'

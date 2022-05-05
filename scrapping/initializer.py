@@ -10,7 +10,7 @@ import metroprog
 import mysql.connector
 
 
-interia_hrefs = {'https://pogoda.interia.pl/prognoza-szczegolowa-agh,cId,1233058':'agh'}
+interia_hrefs = {'https://pogoda.interia.pl/prognoza-szczegolowa-krakow,cId,4970':'agh'}
 avenue_hrefs = {'https://www.weatheravenue.com/pl/europe/pl/krakow/bronowice-hourly.html':'agh'}
 weatherChannel_hrefs = {'https://weather.com/weather/hourbyhour/l/e3172e6c71e631465847a819d8297d8cdb704d4662cb72af0699e437144d6980':'agh'}
 onet_hrefs = {'https://pogoda.onet.pl/prognoza-pogody/maly-plaszow-315521':'agh'}

@@ -116,23 +116,23 @@ def metroprogAll(request,r):
     serializer = metroprogSerializer(result, many = True  )
     return Response(serializer.data)
 
+@api_view(['GET'])
+def raspAll(request):
+    records = raspberry.objects.all().order_by('-id')[:12]
+    serializer = raspberrySerializer(records, many = True)
+
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def modelMLAll(request):
+    records = modelML.objects.all().order_by('-id')[:12]
+    serializer = modelsMLSerializer(records, many = True)
+
+    return Response(serializer.data)
+
 @api_view(['POST'])
 def mailsAdd(request):
     serializer = mailsSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()
     return Response(serializer.data)
-
-@api_view(['GET'])
-def espAll(request):
-    selectedDay = date.today()
-    records = esp.objects.all
-    #print(records[0].temperature)
-
-    serializer = espSerializer(records) #zmiana na TRUE
-    #return Response(serializer.data)
-    # serializer = mailsSerializer(data=request.data)
-    # if serializer.is_valid():
-    #     serializer.save()
-    return Response(serializer.data)
-

@@ -37,7 +37,12 @@ class mailsSerializer(serializers.ModelSerializer):
         model = mails
         fields ="__all__"
 
-class espSerializer(serializers.ModelSerializer):
+class raspberrySerializer(serializers.ModelSerializer):
     class Meta:
-        model = esp
+        model = raspberry
+        fields ="__all__"
+
+class modelsMLSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = modelML
         fields ="__all__"
