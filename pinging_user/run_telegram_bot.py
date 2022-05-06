@@ -1,5 +1,5 @@
 import time
-from parse_temperature import init_telegram_bot, update_database
+from telegram_definition import init_telegram_bot, update_database
 
 init_telegram_bot()
 while(True):
