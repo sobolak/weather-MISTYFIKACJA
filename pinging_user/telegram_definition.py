@@ -71,7 +71,7 @@ def init_telegram_bot():
     updater.dispatcher.add_handler(CommandHandler('onet', onet_weather_telegram))
     updater.dispatcher.add_handler(CommandHandler('wp', wp_weather_telegram))
     updater.dispatcher.add_handler(CommandHandler('metroprog', metroprog_weather_telegram))
-    updater.dispatcher.add_handler(CommandHandler('forecast', forecast_weather_telegram))
+    # updater.dispatcher.add_handler(CommandHandler('forecast', forecast_weather_telegram))
     updater.dispatcher.add_handler(MessageHandler(Filters.text, unknown_telegram))
     updater.dispatcher.add_handler(MessageHandler(Filters.command, unknown_telegram))
     updater.dispatcher.add_handler(MessageHandler(Filters.text, unknown_text_telegram))
@@ -98,7 +98,7 @@ def db_insert_esp(temperature, humidity, weather_time, hour):
             cursor.close()
             connection.close()
 
-def db_get_data(table, forecast = False): # limit_ctr = 1, date_name = "weather_time"):
+def db_get_data(table, forecast = False, mail = False):
     try:
         connection = mysql.connector.connect(host='sql10.freemysqlhosting.net',
                                          database='sql10489794',
@@ -110,13 +110,19 @@ def db_get_data(table, forecast = False): # limit_ctr = 1, date_name = "weather_
         today = date.today()
         if not forecast:
             query = f"SELECT * FROM {table} WHERE weather_time = '{today}' AND hour = {actual_hour}"
+            print("0")
         else:
+            print("1")
+            date_name = "weather_time" if mail else "date"
             if actual_hour < 21:
-                query = f"SELECT * FROM {table} WHERE date = '{today}' AND hour BETWEEN {actual_hour} AND {actual_hour + 3}"
+                print("2")
+                print(date_name)
+                query = f"SELECT * FROM {table} WHERE {date_name} = '{today}' AND hour BETWEEN {actual_hour} AND {actual_hour + 3}"
             else:
                 next_day = (datetime.today() + timedelta(days=1)).today().date()
-                query = f"""SELECT * FROM {table} WHERE (date = '{today}' AND hour BETWEEN {actual_hour} AND {23}) OR 
-                                                        (date = '{next_day}' AND hour BETWEEN {0} AND {actual_hour + 3 % 24})"""
+                query = f"""SELECT * FROM {table} WHERE ({date_name} = '{today}' AND hour BETWEEN {actual_hour} AND {23}) OR 
+                                                        ({date_name} = '{next_day}' AND hour BETWEEN {0} AND {actual_hour + 3 % 24})"""
+                print("3")
         cursor.execute(query)
 
     except mysql.connector.Error as error:
@@ -127,17 +133,24 @@ def db_get_data(table, forecast = False): # limit_ctr = 1, date_name = "weather_
             connection.close()
         return cursor.fetchall()
 
-def interia_weather_telegram(update: Update, context: CallbackContext):
-    interia_weather_results = db_get_data("interia")[0]
-    update.message.reply_text(
-        f"""
-        Time: {interia_weather_results[7]} {interia_weather_results[8]}h\n
-        Temperature: {interia_weather_results[1]}\n
-        Humidity: {interia_weather_results[3]}\n
-        Wind: {interia_weather_results[2]}\n
-        Rain: {interia_weather_results[4]}\n
-        Cloudiness: {interia_weather_results[5]}\n"""
-        )
+def db_get_email():
+    try:
+        connection = mysql.connector.connect(host='sql10.freemysqlhosting.net',
+                                         database='sql10489794',
+                                         user='sql10489794',
+                                         password='IPELfw5A2X',
+                                         auth_plugin='mysql_native_password')
+        cursor = connection.cursor()
+        query = f"SELECT mail FROM mails"
+        cursor.execute(query)
+
+    except mysql.connector.Error as error:
+        print("Failed to get data from MySQL table {}".format(error))
+    finally:
+        if connection.is_connected():
+            cursor.close()
+            connection.close()
+        return cursor.fetchall()
 
 def interia_weather_telegram(update: Update, context: CallbackContext):
     interia_weather_results = db_get_data("interia")[0]
@@ -200,7 +213,7 @@ def wp_weather_telegram(update: Update, context: CallbackContext):
         )
 
 def metroprog_weather_telegram(update: Update, context: CallbackContext):
-    metroprog_weather_results = db_get_data("metroprog")
+    metroprog_weather_results = db_get_data("metroprog")[0]
     update.message.reply_text(
         f"""
         Time: {metroprog_weather_results[7]} {metroprog_weather_results[8]}h\n
@@ -211,57 +224,64 @@ def metroprog_weather_telegram(update: Update, context: CallbackContext):
         Cloudiness: {metroprog_weather_results[5]}\n"""
         )
 
-def forecast_weather_telegram(update: Update, context: CallbackContext):
-    forecast_weather_results = db_get_data("forecast", 4, "date")
-    print(forecast_weather_results)
-    reply_string = f"""
-    Time: {forecast_weather_results[1]} {forecast_weather_results[2]}h\n
-    Temperature: {forecast_weather_results[3]}\n
-    Humidity: {forecast_weather_results[4]}\n
-    Conditions: {forecast_weather_results[5]}\n"""
-    update.message.reply_text(reply_string)
+# def forecast_weather_telegram(update: Update, context: CallbackContext):
+#     forecast_weather_results = db_get_data("forecast", True)
+#     print(forecast_weather_results)
+#     reply_string = f"""
+#     Time: {forecast_weather_results[1]} {forecast_weather_results[2]}h\n
+#     Temperature: {forecast_weather_results[3]}\n
+#     Humidity: {forecast_weather_results[4]}\n
+#     Conditions: {forecast_weather_results[5]}\n"""
+#     update.message.reply_text(reply_string)
 
 def send_email():
     sender_email = "projektflask@gmail.com"
-    receiver_email = "pawelbaluszynski16@gmail.com"
+    receiver_email = db_get_email()[0][0]
+    print(receiver_email)
+
+    interia_weather_results = db_get_data("interia", True, True)
+    avenue_weather_results = db_get_data("avenue", True, True)
+    print(interia_weather_results)
+    print(avenue_weather_results)
+
 
     message = MIMEMultipart("alternative")
     message["Subject"] = f"WEATHER-mistyfikacja - informacja {date.today()} godzina: {datetime.now().hour}"
     message["From"] = sender_email
     message["To"] = receiver_email
 
-    html = """
+    html = f"""
     <html>
     <head>
         <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Rubik:wght@300;400;500;600;700;800&family=Ubuntu:wght@400;500;700&display=swap" rel="stylesheet">
         <style>
-        body{
+        body{{
             background-color: rgb(54, 54, 73);
-        }
+        }}
 
-        *{
+        *{{
             font-family: 'Roboto';
-        }
+        }}
 
-        .table tr th,td{
+        .table tr th,td{{
             padding: 0 2rem;
-        }
+        }}
 
-        .table {
+        .table {{
             border-radius: 20px;
             padding: 1rem;
             background-color: rgb(85, 85, 116);
             color: rgb(212, 212, 212);
-        }
+        }}
 
-        a{
+        a{{
             text-decoration: none;
             color: rgb(197, 197, 197);
-        }
+        }}
 
-        a:hover{
+        a:hover{{
             color: black;
-        }
+        }}
         </style>
     </head>
     <body>
@@ -276,28 +296,36 @@ def send_email():
                 <th>Cloudiness</th>
             </tr>
             <tr>
-                <td>Time</td>
-                <td>Temperature</td>
-                <td>Wind</td>
-                <td>Humidity</td>
-                <td>Rain</td>
-                <td>Cloudiness</td>
+                <td>{interia_weather_results[0][7]} {interia_weather_results[0][8]}h</td>
+                <td>{interia_weather_results[0][1]}</td>
+                <td>{interia_weather_results[0][2]}</td>
+                <td>{interia_weather_results[0][3]}</td>
+                <td>{interia_weather_results[0][4]}</td>
+                <td>{interia_weather_results[0][5]}</td>
             </tr>
             <tr>
-                <td>Time</td>
-                <td>Temperature</td>
-                <td>Wind</td>
-                <td>Humidity</td>
-                <td>Rain</td>
-                <td>Cloudiness</td>
+                <td>{interia_weather_results[1][7]} {interia_weather_results[1][8]}h</td>
+                <td>{interia_weather_results[1][1]}</td>
+                <td>{interia_weather_results[1][2]}</td>
+                <td>{interia_weather_results[1][3]}</td>
+                <td>{interia_weather_results[1][4]}</td>
+                <td>{interia_weather_results[1][5]}</td>
             </tr>
             <tr>
-                <td>Time</td>
-                <td>Temperature</td>
-                <td>Wind</td>
-                <td>Humidity</td>
-                <td>Rain</td>
-                <td>Cloudiness</td>
+                <td>{interia_weather_results[2][7]} {interia_weather_results[2][8]}h</td>
+                <td>{interia_weather_results[2][1]}</td>
+                <td>{interia_weather_results[2][2]}</td>
+                <td>{interia_weather_results[2][3]}</td>
+                <td>{interia_weather_results[2][4]}</td>
+                <td>{interia_weather_results[2][5]}</td>
+            </tr>
+            <tr>
+                <td>{interia_weather_results[3][7]} {interia_weather_results[3][8]}h</td>
+                <td>{interia_weather_results[3][1]}</td>
+                <td>{interia_weather_results[3][2]}</td>
+                <td>{interia_weather_results[3][3]}</td>
+                <td>{interia_weather_results[3][4]}</td>
+                <td>{interia_weather_results[3][5]}</td>
             </tr>
         </table>
         <h2><a href="https://www.weatheravenue.com/pl/europe/pl/krakow/bronowice-hourly.html">Avenue:</a></h2>
@@ -311,39 +339,44 @@ def send_email():
                 <th>Cloudiness</th>
             </tr>
             <tr>
-                <td>Time</td>
-                <td>Temperature</td>
-                <td>Wind</td>
-                <td>Humidity</td>
-                <td>Rain</td>
-                <td>Cloudiness</td>
+                <td>{avenue_weather_results[0][7]} {avenue_weather_results[0][8]}h</td>
+                <td>{avenue_weather_results[0][1]}</td>
+                <td>{avenue_weather_results[0][2]}</td>
+                <td>{avenue_weather_results[0][3]}</td>
+                <td>{avenue_weather_results[0][4]}</td>
+                <td>{avenue_weather_results[0][5]}</td>
             </tr>
             <tr>
-                <td>Time</td>
-                <td>Temperature</td>
-                <td>Wind</td>
-                <td>Humidity</td>
-                <td>Rain</td>
-                <td>Cloudiness</td>
+                <td>{avenue_weather_results[1][7]} {avenue_weather_results[1][8]}h</td>
+                <td>{avenue_weather_results[1][1]}</td>
+                <td>{avenue_weather_results[1][2]}</td>
+                <td>{avenue_weather_results[1][3]}</td>
+                <td>{avenue_weather_results[1][4]}</td>
+                <td>{avenue_weather_results[1][5]}</td>
             </tr>
             <tr>
-                <td>Time</td>
-                <td>Temperature</td>
-                <td>Wind</td>
-                <td>Humidity</td>
-                <td>Rain</td>
-                <td>Cloudiness</td>
+                <td>{avenue_weather_results[2][7]} {avenue_weather_results[2][8]}h</td>
+                <td>{avenue_weather_results[2][1]}</td>
+                <td>{avenue_weather_results[2][2]}</td>
+                <td>{avenue_weather_results[2][3]}</td>
+                <td>{avenue_weather_results[2][4]}</td>
+                <td>{avenue_weather_results[2][5]}</td>
+            </tr>
+            <tr>
+                <td>{avenue_weather_results[3][7]} {avenue_weather_results[3][8]}h</td>
+                <td>{avenue_weather_results[3][1]}</td>
+                <td>{avenue_weather_results[3][2]}</td>
+                <td>{avenue_weather_results[3][3]}</td>
+                <td>{avenue_weather_results[3][4]}</td>
+                <td>{avenue_weather_results[3][5]}</td>
             </tr>
         </table>
     </body>
     </html>
     """
 
-    # Add HTML/plain-text parts to MIMEMultipart message
-    # The email client will try to render the last part first
     message.attach(MIMEText(html, "html"))
 
-    # Create secure connection with server and send email
     context = ssl.create_default_context()
     with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
         server.login(sender_email, "Rokoko123!@")
