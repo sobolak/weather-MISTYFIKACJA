@@ -7,7 +7,10 @@ from telegram.ext.commandhandler import CommandHandler
 from telegram.ext.messagehandler import MessageHandler
 from telegram.ext.filters import Filters
 import mysql.connector
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
+import smtplib, ssl
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 def parse_measurements():
     requestedPage = requests.get('http://192.168.1.105')
@@ -95,7 +98,7 @@ def db_insert_esp(temperature, humidity, weather_time, hour):
             cursor.close()
             connection.close()
 
-def db_get_data(table, limit_ctr = 1, date_name = "weather_time"):
+def db_get_data(table, forecast = False): # limit_ctr = 1, date_name = "weather_time"):
     try:
         connection = mysql.connector.connect(host='sql10.freemysqlhosting.net',
                                          database='sql10489794',
@@ -103,9 +106,18 @@ def db_get_data(table, limit_ctr = 1, date_name = "weather_time"):
                                          password='IPELfw5A2X',
                                          auth_plugin='mysql_native_password')
         cursor = connection.cursor()
-        query = f"SELECT * FROM {table} WHERE {date_name} = '{date.today()}' AND hour = {datetime.now().hour} LIMIT {limit_ctr}" # BETWEEN {datetime.now().hour} AND {datetime.now().hour + 4}
+        actual_hour = datetime.now().hour
+        today = date.today()
+        if not forecast:
+            query = f"SELECT * FROM {table} WHERE weather_time = '{today}' AND hour = {actual_hour}"
+        else:
+            if actual_hour < 21:
+                query = f"SELECT * FROM {table} WHERE date = '{today}' AND hour BETWEEN {actual_hour} AND {actual_hour + 3}"
+            else:
+                next_day = (datetime.today() + timedelta(days=1)).today().date()
+                query = f"""SELECT * FROM {table} WHERE (date = '{today}' AND hour BETWEEN {actual_hour} AND {23}) OR 
+                                                        (date = '{next_day}' AND hour BETWEEN {0} AND {actual_hour + 3 % 24})"""
         cursor.execute(query)
-        # connection.commit()
 
     except mysql.connector.Error as error:
         print("Failed to get data from MySQL table {}".format(error))
@@ -208,3 +220,133 @@ def forecast_weather_telegram(update: Update, context: CallbackContext):
     Humidity: {forecast_weather_results[4]}\n
     Conditions: {forecast_weather_results[5]}\n"""
     update.message.reply_text(reply_string)
+
+def send_email():
+    sender_email = "projektflask@gmail.com"
+    receiver_email = "pawelbaluszynski16@gmail.com"
+
+    message = MIMEMultipart("alternative")
+    message["Subject"] = f"WEATHER-mistyfikacja - informacja {date.today()} godzina: {datetime.now().hour}"
+    message["From"] = sender_email
+    message["To"] = receiver_email
+
+    html = """
+    <html>
+    <head>
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Rubik:wght@300;400;500;600;700;800&family=Ubuntu:wght@400;500;700&display=swap" rel="stylesheet">
+        <style>
+        body{
+            background-color: rgb(54, 54, 73);
+        }
+
+        *{
+            font-family: 'Roboto';
+        }
+
+        .table tr th,td{
+            padding: 0 2rem;
+        }
+
+        .table {
+            border-radius: 20px;
+            padding: 1rem;
+            background-color: rgb(85, 85, 116);
+            color: rgb(212, 212, 212);
+        }
+
+        a{
+            text-decoration: none;
+            color: rgb(197, 197, 197);
+        }
+
+        a:hover{
+            color: black;
+        }
+        </style>
+    </head>
+    <body>
+        <h2><a href="https://pogoda.interia.pl/prognoza-szczegolowa-krakow,cId,4970">Interia:</a></h2>
+        <table  class="table">
+            <tr>
+                <th>Time</th>
+                <th>Temperature</th>
+                <th>Wind</th>
+                <th>Humidity</th>
+                <th>Rain</th>
+                <th>Cloudiness</th>
+            </tr>
+            <tr>
+                <td>Time</td>
+                <td>Temperature</td>
+                <td>Wind</td>
+                <td>Humidity</td>
+                <td>Rain</td>
+                <td>Cloudiness</td>
+            </tr>
+            <tr>
+                <td>Time</td>
+                <td>Temperature</td>
+                <td>Wind</td>
+                <td>Humidity</td>
+                <td>Rain</td>
+                <td>Cloudiness</td>
+            </tr>
+            <tr>
+                <td>Time</td>
+                <td>Temperature</td>
+                <td>Wind</td>
+                <td>Humidity</td>
+                <td>Rain</td>
+                <td>Cloudiness</td>
+            </tr>
+        </table>
+        <h2><a href="https://www.weatheravenue.com/pl/europe/pl/krakow/bronowice-hourly.html">Avenue:</a></h2>
+        <table  class="table">
+            <tr>
+                <th>Time</th>
+                <th>Temperature</th>
+                <th>Wind</th>
+                <th>Humidity</th>
+                <th>Rain</th>
+                <th>Cloudiness</th>
+            </tr>
+            <tr>
+                <td>Time</td>
+                <td>Temperature</td>
+                <td>Wind</td>
+                <td>Humidity</td>
+                <td>Rain</td>
+                <td>Cloudiness</td>
+            </tr>
+            <tr>
+                <td>Time</td>
+                <td>Temperature</td>
+                <td>Wind</td>
+                <td>Humidity</td>
+                <td>Rain</td>
+                <td>Cloudiness</td>
+            </tr>
+            <tr>
+                <td>Time</td>
+                <td>Temperature</td>
+                <td>Wind</td>
+                <td>Humidity</td>
+                <td>Rain</td>
+                <td>Cloudiness</td>
+            </tr>
+        </table>
+    </body>
+    </html>
+    """
+
+    # Add HTML/plain-text parts to MIMEMultipart message
+    # The email client will try to render the last part first
+    message.attach(MIMEText(html, "html"))
+
+    # Create secure connection with server and send email
+    context = ssl.create_default_context()
+    with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
+        server.login(sender_email, "Rokoko123!@")
+        server.sendmail(
+            sender_email, receiver_email, message.as_string()
+        )
