@@ -11,6 +11,7 @@ from datetime import date, datetime, timedelta
 import smtplib, ssl
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from telegram import ParseMode
 
 def parse_measurements():
     requestedPage = requests.get('http://192.168.1.105')
@@ -40,7 +41,8 @@ def help_telegram(update: Update, context: CallbackContext):
     /onet - actual onet weather
     /wp - actual wp weather
     /metroprog - actual metroprog weather
-    /forecast - forecast from model""")
+    /forecast - forecast from model
+    /mail - send mail to adress list""")
 
 def measurements_telegram(update: Update, context: CallbackContext):
     update.message.reply_text(f"Temperature: {parse_measurements()[0]}\nHumidity: {parse_measurements()[1]}")
@@ -71,7 +73,8 @@ def init_telegram_bot():
     updater.dispatcher.add_handler(CommandHandler('onet', onet_weather_telegram))
     updater.dispatcher.add_handler(CommandHandler('wp', wp_weather_telegram))
     updater.dispatcher.add_handler(CommandHandler('metroprog', metroprog_weather_telegram))
-    # updater.dispatcher.add_handler(CommandHandler('forecast', forecast_weather_telegram))
+    updater.dispatcher.add_handler(CommandHandler('forecast', forecast_weather_telegram))
+    updater.dispatcher.add_handler(CommandHandler('mail', send_email))
     updater.dispatcher.add_handler(MessageHandler(Filters.text, unknown_telegram))
     updater.dispatcher.add_handler(MessageHandler(Filters.command, unknown_telegram))
     updater.dispatcher.add_handler(MessageHandler(Filters.text, unknown_text_telegram))
@@ -110,14 +113,15 @@ def db_get_data(table, forecast = False, mail = False):
         today = date.today()
         if not forecast:
             query = f"SELECT * FROM {table} WHERE weather_time = '{today}' AND hour = {actual_hour}"
-            print("0")
         else:
-            print("1")
-            date_name = "weather_time" if mail else "date"
+            if mail:
+                date_name = "weather_time" 
+                order = ""
+            else:
+                date_name = "date"
+                order = "ORDER BY id DESC"
             if actual_hour < 21:
-                print("2")
-                print(date_name)
-                query = f"SELECT * FROM {table} WHERE {date_name} = '{today}' AND hour BETWEEN {actual_hour} AND {actual_hour + 3}"
+                query = f"SELECT * FROM {table} WHERE {date_name} = '{today}' AND hour BETWEEN {actual_hour} AND {actual_hour + 3} {order}"
             else:
                 next_day = (datetime.today() + timedelta(days=1)).today().date()
                 query = f"""SELECT * FROM {table} WHERE ({date_name} = '{today}' AND hour BETWEEN {actual_hour} AND {23}) OR 
@@ -224,162 +228,161 @@ def metroprog_weather_telegram(update: Update, context: CallbackContext):
         Cloudiness: {metroprog_weather_results[5]}\n"""
         )
 
-# def forecast_weather_telegram(update: Update, context: CallbackContext):
-#     forecast_weather_results = db_get_data("forecast", True)
-#     print(forecast_weather_results)
-#     reply_string = f"""
-#     Time: {forecast_weather_results[1]} {forecast_weather_results[2]}h\n
-#     Temperature: {forecast_weather_results[3]}\n
-#     Humidity: {forecast_weather_results[4]}\n
-#     Conditions: {forecast_weather_results[5]}\n"""
-#     update.message.reply_text(reply_string)
+def forecast_weather_telegram(update: Update, context: CallbackContext):
+    forecast_weather_results = db_get_data("forecast", True)
+    reply_string = f"""
+|             Time           | Temp. | Humidity |      Conditions     |
+|---------------------------|----------|----------------|-------------------------|
+| {forecast_weather_results[0][1]} {forecast_weather_results[0][2]}:00 |    {forecast_weather_results[0][3]}     |        {forecast_weather_results[0][4]}       | {forecast_weather_results[0][5]} |
+| {forecast_weather_results[1][1]} {forecast_weather_results[1][2]}:00 |    {forecast_weather_results[1][3]}     |        {forecast_weather_results[1][4]}       | {forecast_weather_results[1][5]} |
+| {forecast_weather_results[2][1]} {forecast_weather_results[2][2]}:00 |    {forecast_weather_results[2][3]}     |        {forecast_weather_results[2][4]}       |           {forecast_weather_results[2][5]}          |
+| {forecast_weather_results[3][1]} {forecast_weather_results[3][2]}:00 |    {forecast_weather_results[3][3]}     |        {forecast_weather_results[3][4]}       |           {forecast_weather_results[3][5]}          |
+    """
+    
+    update.message.reply_text(reply_string, parse_mode = ParseMode.MARKDOWN)
 
-def send_email():
+def send_email(update: Update, context: CallbackContext):
     sender_email = "projektflask@gmail.com"
-    receiver_email = db_get_email()[0][0]
-    print(receiver_email)
+    receiver_email = db_get_email()
 
     interia_weather_results = db_get_data("interia", True, True)
     avenue_weather_results = db_get_data("avenue", True, True)
-    print(interia_weather_results)
-    print(avenue_weather_results)
-
 
     message = MIMEMultipart("alternative")
     message["Subject"] = f"WEATHER-mistyfikacja - informacja {date.today()} godzina: {datetime.now().hour}"
     message["From"] = sender_email
-    message["To"] = receiver_email
+    for mail in receiver_email:
+        message["To"] = mail[0]
 
-    html = f"""
-    <html>
-    <head>
-        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Rubik:wght@300;400;500;600;700;800&family=Ubuntu:wght@400;500;700&display=swap" rel="stylesheet">
-        <style>
-        body{{
-            background-color: rgb(54, 54, 73);
-        }}
+        html = f"""
+        <html>
+        <head>
+            <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Rubik:wght@300;400;500;600;700;800&family=Ubuntu:wght@400;500;700&display=swap" rel="stylesheet">
+            <style>
+            body{{
+                background-color: rgb(54, 54, 73);
+            }}
 
-        *{{
-            font-family: 'Roboto';
-        }}
+            *{{
+                font-family: 'Roboto';
+            }}
 
-        .table tr th,td{{
-            padding: 0 2rem;
-        }}
+            .table tr th,td{{
+                padding: 0 2rem;
+            }}
 
-        .table {{
-            border-radius: 20px;
-            padding: 1rem;
-            background-color: rgb(85, 85, 116);
-            color: rgb(212, 212, 212);
-        }}
+            .table {{
+                border-radius: 20px;
+                padding: 1rem;
+                background-color: rgb(85, 85, 116);
+                color: rgb(212, 212, 212);
+            }}
 
-        a{{
-            text-decoration: none;
-            color: rgb(197, 197, 197);
-        }}
+            a{{
+                text-decoration: none;
+                color: rgb(197, 197, 197);
+            }}
 
-        a:hover{{
-            color: black;
-        }}
-        </style>
-    </head>
-    <body>
-        <h2><a href="https://pogoda.interia.pl/prognoza-szczegolowa-krakow,cId,4970">Interia:</a></h2>
-        <table  class="table">
-            <tr>
-                <th>Time</th>
-                <th>Temperature</th>
-                <th>Wind</th>
-                <th>Humidity</th>
-                <th>Rain</th>
-                <th>Cloudiness</th>
-            </tr>
-            <tr>
-                <td>{interia_weather_results[0][7]} {interia_weather_results[0][8]}h</td>
-                <td>{interia_weather_results[0][1]}</td>
-                <td>{interia_weather_results[0][2]}</td>
-                <td>{interia_weather_results[0][3]}</td>
-                <td>{interia_weather_results[0][4]}</td>
-                <td>{interia_weather_results[0][5]}</td>
-            </tr>
-            <tr>
-                <td>{interia_weather_results[1][7]} {interia_weather_results[1][8]}h</td>
-                <td>{interia_weather_results[1][1]}</td>
-                <td>{interia_weather_results[1][2]}</td>
-                <td>{interia_weather_results[1][3]}</td>
-                <td>{interia_weather_results[1][4]}</td>
-                <td>{interia_weather_results[1][5]}</td>
-            </tr>
-            <tr>
-                <td>{interia_weather_results[2][7]} {interia_weather_results[2][8]}h</td>
-                <td>{interia_weather_results[2][1]}</td>
-                <td>{interia_weather_results[2][2]}</td>
-                <td>{interia_weather_results[2][3]}</td>
-                <td>{interia_weather_results[2][4]}</td>
-                <td>{interia_weather_results[2][5]}</td>
-            </tr>
-            <tr>
-                <td>{interia_weather_results[3][7]} {interia_weather_results[3][8]}h</td>
-                <td>{interia_weather_results[3][1]}</td>
-                <td>{interia_weather_results[3][2]}</td>
-                <td>{interia_weather_results[3][3]}</td>
-                <td>{interia_weather_results[3][4]}</td>
-                <td>{interia_weather_results[3][5]}</td>
-            </tr>
-        </table>
-        <h2><a href="https://www.weatheravenue.com/pl/europe/pl/krakow/bronowice-hourly.html">Avenue:</a></h2>
-        <table  class="table">
-            <tr>
-                <th>Time</th>
-                <th>Temperature</th>
-                <th>Wind</th>
-                <th>Humidity</th>
-                <th>Rain</th>
-                <th>Cloudiness</th>
-            </tr>
-            <tr>
-                <td>{avenue_weather_results[0][7]} {avenue_weather_results[0][8]}h</td>
-                <td>{avenue_weather_results[0][1]}</td>
-                <td>{avenue_weather_results[0][2]}</td>
-                <td>{avenue_weather_results[0][3]}</td>
-                <td>{avenue_weather_results[0][4]}</td>
-                <td>{avenue_weather_results[0][5]}</td>
-            </tr>
-            <tr>
-                <td>{avenue_weather_results[1][7]} {avenue_weather_results[1][8]}h</td>
-                <td>{avenue_weather_results[1][1]}</td>
-                <td>{avenue_weather_results[1][2]}</td>
-                <td>{avenue_weather_results[1][3]}</td>
-                <td>{avenue_weather_results[1][4]}</td>
-                <td>{avenue_weather_results[1][5]}</td>
-            </tr>
-            <tr>
-                <td>{avenue_weather_results[2][7]} {avenue_weather_results[2][8]}h</td>
-                <td>{avenue_weather_results[2][1]}</td>
-                <td>{avenue_weather_results[2][2]}</td>
-                <td>{avenue_weather_results[2][3]}</td>
-                <td>{avenue_weather_results[2][4]}</td>
-                <td>{avenue_weather_results[2][5]}</td>
-            </tr>
-            <tr>
-                <td>{avenue_weather_results[3][7]} {avenue_weather_results[3][8]}h</td>
-                <td>{avenue_weather_results[3][1]}</td>
-                <td>{avenue_weather_results[3][2]}</td>
-                <td>{avenue_weather_results[3][3]}</td>
-                <td>{avenue_weather_results[3][4]}</td>
-                <td>{avenue_weather_results[3][5]}</td>
-            </tr>
-        </table>
-    </body>
-    </html>
-    """
+            a:hover{{
+                color: black;
+            }}
+            </style>
+        </head>
+        <body>
+            <h2><a href="https://pogoda.interia.pl/prognoza-szczegolowa-krakow,cId,4970">Interia:</a></h2>
+            <table  class="table">
+                <tr>
+                    <th>Time</th>
+                    <th>Temperature</th>
+                    <th>Wind</th>
+                    <th>Humidity</th>
+                    <th>Rain</th>
+                    <th>Cloudiness</th>
+                </tr>
+                <tr>
+                    <td>{interia_weather_results[0][7]} {interia_weather_results[0][8]}h</td>
+                    <td>{interia_weather_results[0][1]}</td>
+                    <td>{interia_weather_results[0][2]}</td>
+                    <td>{interia_weather_results[0][3]}</td>
+                    <td>{interia_weather_results[0][4]}</td>
+                    <td>{interia_weather_results[0][5]}</td>
+                </tr>
+                <tr>
+                    <td>{interia_weather_results[1][7]} {interia_weather_results[1][8]}h</td>
+                    <td>{interia_weather_results[1][1]}</td>
+                    <td>{interia_weather_results[1][2]}</td>
+                    <td>{interia_weather_results[1][3]}</td>
+                    <td>{interia_weather_results[1][4]}</td>
+                    <td>{interia_weather_results[1][5]}</td>
+                </tr>
+                <tr>
+                    <td>{interia_weather_results[2][7]} {interia_weather_results[2][8]}h</td>
+                    <td>{interia_weather_results[2][1]}</td>
+                    <td>{interia_weather_results[2][2]}</td>
+                    <td>{interia_weather_results[2][3]}</td>
+                    <td>{interia_weather_results[2][4]}</td>
+                    <td>{interia_weather_results[2][5]}</td>
+                </tr>
+                <tr>
+                    <td>{interia_weather_results[3][7]} {interia_weather_results[3][8]}h</td>
+                    <td>{interia_weather_results[3][1]}</td>
+                    <td>{interia_weather_results[3][2]}</td>
+                    <td>{interia_weather_results[3][3]}</td>
+                    <td>{interia_weather_results[3][4]}</td>
+                    <td>{interia_weather_results[3][5]}</td>
+                </tr>
+            </table>
+            <h2><a href="https://www.weatheravenue.com/pl/europe/pl/krakow/bronowice-hourly.html">Avenue:</a></h2>
+            <table  class="table">
+                <tr>
+                    <th>Time</th>
+                    <th>Temperature</th>
+                    <th>Wind</th>
+                    <th>Humidity</th>
+                    <th>Rain</th>
+                    <th>Cloudiness</th>
+                </tr>
+                <tr>
+                    <td>{avenue_weather_results[0][7]} {avenue_weather_results[0][8]}h</td>
+                    <td>{avenue_weather_results[0][1]}</td>
+                    <td>{avenue_weather_results[0][2]}</td>
+                    <td>{avenue_weather_results[0][3]}</td>
+                    <td>{avenue_weather_results[0][4]}</td>
+                    <td>{avenue_weather_results[0][5]}</td>
+                </tr>
+                <tr>
+                    <td>{avenue_weather_results[1][7]} {avenue_weather_results[1][8]}h</td>
+                    <td>{avenue_weather_results[1][1]}</td>
+                    <td>{avenue_weather_results[1][2]}</td>
+                    <td>{avenue_weather_results[1][3]}</td>
+                    <td>{avenue_weather_results[1][4]}</td>
+                    <td>{avenue_weather_results[1][5]}</td>
+                </tr>
+                <tr>
+                    <td>{avenue_weather_results[2][7]} {avenue_weather_results[2][8]}h</td>
+                    <td>{avenue_weather_results[2][1]}</td>
+                    <td>{avenue_weather_results[2][2]}</td>
+                    <td>{avenue_weather_results[2][3]}</td>
+                    <td>{avenue_weather_results[2][4]}</td>
+                    <td>{avenue_weather_results[2][5]}</td>
+                </tr>
+                <tr>
+                    <td>{avenue_weather_results[3][7]} {avenue_weather_results[3][8]}h</td>
+                    <td>{avenue_weather_results[3][1]}</td>
+                    <td>{avenue_weather_results[3][2]}</td>
+                    <td>{avenue_weather_results[3][3]}</td>
+                    <td>{avenue_weather_results[3][4]}</td>
+                    <td>{avenue_weather_results[3][5]}</td>
+                </tr>
+            </table>
+        </body>
+        </html>
+        """
 
-    message.attach(MIMEText(html, "html"))
+        message.attach(MIMEText(html, "html"))
 
-    context = ssl.create_default_context()
-    with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
-        server.login(sender_email, "Rokoko123!@")
-        server.sendmail(
-            sender_email, receiver_email, message.as_string()
-        )
+        context = ssl.create_default_context()
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
+            server.login(sender_email, "Rokoko123!@")
+            server.sendmail(sender_email, mail[0], message.as_string())
+    
